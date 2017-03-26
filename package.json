@@ -6,7 +6,8 @@
   "dependencies": {
     "express" : "*",
     "ejs" : "*",
-    "socket.io" : "*"
+    "socket.io" : "*",
+    "azure" : "*"
   },
   "devDependencies": {},
   "scripts": {

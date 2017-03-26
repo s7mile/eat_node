@@ -32,12 +32,23 @@ var notificationHubService = azure.createNotificationHubService(hubName,connecti
 var io = require('socket.io').listen(server);
 io.sockets.on('connection',function(socket){ //on은 이벤트(마우스클릭 서버접속 등등의 요청)를 기다림. 그니까 커넥션이 들어왔을 경우 다음 함수들을 실행
     socket.emit('toclient',{msg:'Welcome !'}); //chat.ejs보면 toclient로 받는 부분이 있음 emit은 저 toclient를 내보낸다! 라는 기능
-    
+    notificationHubService.gcm.send(null, {data:{id:socket.id, message:'Welcome'}},function(error){
+        if(!error){
+            console.log('send');
+        }
+    });
     socket.on('fromclient',function(data){
         socket.broadcast.emit('toclient',data); // 자신을 제외하고 다른 클라이언트에게 보냄
         socket.emit('toclient',data); // 해당 클라이언트에게만 보냄. 다른 클라이언트에 보낼려면?
         console.log('Message from client :'+data.msg);
 
-
+        if(!data.msg==""){
+            notificationHubService.gcm.send(null, {data:{id:socket.id, message:data.msg}}, function(error){
+                if(!error){
+                    //notification sent
+                        console.log('send');
+                }
+            });
+        }
     });
 });
